@@ -1,0 +1,145 @@
+C51 COMPILER V9.60.0.0   DATA                                                              05/06/2021 17:12:17 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE DATA
+OBJECT MODULE PLACED IN .\Objects\data.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE data.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\data
+                    -.lst) TABS(2) OBJECT(.\Objects\data.obj)
+
+line level    source
+
+   1          #include<reg51.h>
+   2          
+   3          // set initial year, month, day, hour, minute, second
+   4          // set initial time 2001.5.21 5:21:00
+   5          unsigned char data year = 0;
+   6          unsigned char data month = 2;
+   7          unsigned char data day = 28;
+   8          unsigned char data hour = 23;
+   9          unsigned char data minute = 59;
+  10          unsigned char data second = 0;
+  11          unsigned char data ms_50 = 0;
+  12          
+  13          // days of month table
+  14          unsigned char xdata Date[2][12] =  {
+  15            {31,28,31,30,31,30,31,31,30,31,30,31},
+  16            {31,29,31,30,31,30,31,31,30,31,30,31}
+  17          };
+  18            
+  19          
+  20          void Set(void)
+  21          {
+  22   1        EA = 1;
+  23   1        ET0 = 1;
+  24   1        TMOD = 0x01;
+  25   1        TH0 = 0x3C;
+  26   1        TL0 = 0xB0;
+  27   1        TR0 = 1;
+  28   1        TF0 = 0;
+  29   1      }
+  30          
+  31          // Determine whether it is a leap year, 
+  32          // if it is true, return 1, otherwise return 0
+  33          bit JudgeDays(void)
+  34          {
+  35   1        unsigned int Year = 2000 + year;
+  36   1        bit flag = 0;
+  37   1        if( (Year % 400) == 0 || (Year % 4 ==0 && Year % 100 != 0 ))
+  38   1          flag = 1;
+  39   1        return flag;
+  40   1      }
+  41          
+  42          // interrupt program
+  43          void timer0(void) interrupt 1
+  44          {
+  45   1        // reset 
+  46   1        TH0 = 0x3C;
+  47   1        TL0 = 0xB0;
+  48   1        TF0 = 0;
+  49   1        
+  50   1        // Trigger interrupt, indicating overflow, it is 50ms
+  51   1        ms_50++;
+  52   1        if( ms_50 == 20 )
+  53   1        {
+  54   2          ms_50 = 0;
+C51 COMPILER V9.60.0.0   DATA                                                              05/06/2021 17:12:17 PAGE 2   
+
+  55   2          second++;
+  56   2        }
+  57   1        
+  58   1        // minute++;
+  59   1        if( second == 60 )
+  60   1        {
+  61   2          second = 0;
+  62   2          minute++;
+  63   2        }
+  64   1        
+  65   1        // hour++;
+  66   1        if( minute == 60 )
+  67   1        {
+  68   2          minute = 0;
+  69   2          hour++;
+  70   2        }
+  71   1        
+  72   1        // day++;
+  73   1        if( hour == 24 )
+  74   1        {
+  75   2          hour = 0;
+  76   2          day++;
+  77   2        }
+  78   1        
+  79   1        // month++;
+  80   1        if( day == Date[JudgeDays()][month-1]+1 )
+  81   1        {
+  82   2          day = 1;
+  83   2          month++;
+  84   2        }
+  85   1        
+  86   1        // year++;
+  87   1        if( month == 13 )
+  88   1        {
+  89   2          month = 1;
+  90   2          year++;
+  91   2        }
+  92   1      }
+  93          
+  94          // Display time as decimal
+  95          unsigned char Decimal(unsigned char hex)
+  96          {
+  97   1        return 16*(hex/10)+hex%10;
+  98   1      }
+  99            
+ 100          void main(void)
+ 101          {
+ 102   1        // Show time at 0x50
+ 103   1        code unsigned char* show_place = 0x50;  
+ 104   1        // Show the year as 2000+
+ 105   1        show_place[0] = Decimal(20);
+ 106   1        
+ 107   1        Set();
+ 108   1        
+ 109   1        while(1){
+ 110   2          show_place[1] = Decimal(year);
+ 111   2          show_place[2] = Decimal(month);
+ 112   2          show_place[3] = Decimal(day);
+ 113   2          show_place[4] = Decimal(hour);
+ 114   2          show_place[5] = Decimal(minute);
+ 115   2          show_place[6] = Decimal(second);
+ 116   2        };  
+C51 COMPILER V9.60.0.0   DATA                                                              05/06/2021 17:12:17 PAGE 3   
+
+ 117   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    369    ----
+   CONSTANT SIZE    =      3    ----
+   XDATA SIZE       =     24    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      7    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----       1
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

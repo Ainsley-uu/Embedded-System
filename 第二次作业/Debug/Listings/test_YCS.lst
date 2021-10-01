@@ -1,0 +1,54 @@
+A51 MACRO ASSEMBLER  TEST_YCS                                                             04/21/2021 11:09:17 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.2.7.0
+OBJECT MODULE PLACED IN .\Objects\test_YCS.obj
+ASSEMBLER INVOKED BY: C:\Keil_v5\C51\BIN\A51.EXE test_YCS.a51 SET(SMALL) DEBUG PRINT(.\Listings\test_YCS.lst) OBJECT(.\O
+                      bjects\test_YCS.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+0000                   1     ORG    00H
+0000 900030            2         MOV   DPTR, #TABLE  ;source pointer
+0003 7830              3         MOV   R0, #30H
+0005 7900              4         MOV   R1, #0H      ;sum
+0007 7B0F              5         MOV    R3, #15      ;counter
+0009 7400              6         MOV    A, #0H
+000B 93                7     BACK:   MOVC  A, @A+DPTR    ;get a byte from source
+000C F6                8         MOV    @R0,A      
+000D FA                9         MOV    R2, A      ;
+000E E9               10         MOV    A, R1
+000F 2A               11         ADD    A, R2      ;addition
+0010 F9               12         MOV    R1, A      
+0011 08               13         INC    R0        ;increment source pointer
+0012 E8               14         MOV    A, R0
+0013 C3               15             CLR        C
+0014 9430             16         SUBB  A, #30H
+0016 DBF3             17         DJNZ  R3, BACK    ;keep doing for 15 bytes
+                      18         
+0018 E9               19         MOV    A, R1      
+0019 64FF             20         XRL    A, #0FFH    ;Negate
+001B F53F             21         MOV    3FH, A      ;Deposit value into 3F
+                      22         
+0030                  23         ORG    30H
+0030 1B05202F         24     TABLE:  DB    27,5,32,47,38,235,79,17,187,58,23,35,211,104,9
+0034 26EB4F11                
+0038 BB3A1723                
+003C D36809                  
+                      25         END
+A51 MACRO ASSEMBLER  TEST_YCS                                                             04/21/2021 11:09:17 PAGE     2
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+BACK . . . . . . .  C ADDR   000BH   A   
+TABLE. . . . . . .  C ADDR   0030H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

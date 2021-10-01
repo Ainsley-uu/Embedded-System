@@ -1,0 +1,3 @@
+".\Objects\test_YCS.obj" 
+TO ".\Objects\test_YCS" 
+PRINT(".\Listings\test_YCS.m51")
